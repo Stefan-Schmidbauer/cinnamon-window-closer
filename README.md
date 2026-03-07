@@ -1,5 +1,8 @@
 # Window Closer - Cinnamon Applet
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Cinnamon 6.x](https://img.shields.io/badge/Cinnamon-6.x-brightgreen.svg)](https://github.com/linuxmint/cinnamon)
+
 A Cinnamon desktop applet that lets you quickly close multiple windows from a visual overview.
 
 ![Window Closer](screenshot.png)
