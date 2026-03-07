@@ -19,6 +19,8 @@ A Cinnamon desktop applet that lets you quickly close multiple windows from a vi
 ## Installation
 
 ```bash
+git clone https://github.com/Stefan-Schmidbauer/cinnamon-window-closer.git
+cd cinnamon-window-closer
 cp -r window-closer@local ~/.local/share/cinnamon/applets/
 ```
 
