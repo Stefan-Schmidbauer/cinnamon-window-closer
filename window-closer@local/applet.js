@@ -54,6 +54,16 @@ WindowCloserApplet.prototype = {
                 }
             }
         }
+        let tracker = Cinnamon.WindowTracker.get_default();
+        windows.sort(function(a, b) {
+            let appA = "", appB = "";
+            try { let app = tracker.get_window_app(a); if (app) appA = app.get_name() || ""; } catch(e) {}
+            try { let app = tracker.get_window_app(b); if (app) appB = app.get_name() || ""; } catch(e) {}
+            let cmp = appA.toLowerCase().localeCompare(appB.toLowerCase());
+            if (cmp !== 0) return cmp;
+            return (a.get_title() || "").toLowerCase().localeCompare((b.get_title() || "").toLowerCase());
+        });
+
         return windows;
     },
 
