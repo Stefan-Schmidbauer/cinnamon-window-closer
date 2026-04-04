@@ -22,7 +22,8 @@ WindowCloserApplet.prototype = {
     _init: function(metadata, orientation, panelHeight, instanceId) {
         Applet.IconApplet.prototype._init.call(this, orientation, panelHeight, instanceId);
 
-        this.set_applet_icon_symbolic_name("window-close");
+        let iconPath = metadata.path + "/icon.svg";
+        this.set_applet_icon_path(iconPath);
         this.set_applet_tooltip("Window Closer");
 
         this._backdrop = null;
