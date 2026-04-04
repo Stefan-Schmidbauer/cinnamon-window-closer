@@ -5,6 +5,7 @@ const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
 const Meta = imports.gi.Meta;
 const Mainloop = imports.mainloop;
+const Pango = imports.gi.Pango;
 
 const CARD_WIDTH = 220;
 const CARD_HEIGHT = 200;
@@ -86,9 +87,7 @@ WindowCloserApplet.prototype = {
 
         this._backdrop.connect("button-release-event", function(actor, event) {
             if (!self._readyForInput) return Clutter.EVENT_STOP;
-            if (event.get_source() === self._backdrop) {
-                self._closeOverlay();
-            }
+            self._closeOverlay();
             return Clutter.EVENT_STOP;
         });
 
@@ -212,9 +211,10 @@ WindowCloserApplet.prototype = {
         let self = this;
         let title = win.get_title();
         let appName = "";
+        let app = null;
 
         try {
-            let app = tracker.get_window_app(win);
+            app = tracker.get_window_app(win);
             if (app) appName = app.get_name() || "";
         } catch(e) {}
 
@@ -276,14 +276,11 @@ WindowCloserApplet.prototype = {
                 y_expand: true,
                 style: "padding: 20px;"
             });
-            try {
-                let app = tracker.get_window_app(win);
-                if (app) {
-                    iconBin.set_child(app.create_icon_texture(64));
-                } else {
+            if (app) {
+                try { iconBin.set_child(app.create_icon_texture(64)); } catch(e) {
                     iconBin.set_child(new St.Icon({ icon_name: "application-x-executable", icon_size: 64 }));
                 }
-            } catch(e) {
+            } else {
                 iconBin.set_child(new St.Icon({ icon_name: "application-x-executable", icon_size: 64 }));
             }
             cardBox.add_child(iconBin);
@@ -296,15 +293,14 @@ WindowCloserApplet.prototype = {
             style: "padding-top: 8px; spacing: 8px;"
         });
 
-        try {
-            let app = tracker.get_window_app(win);
-            if (app) {
+        if (app) {
+            try {
                 let smallIcon = app.create_icon_texture(20);
                 let iconBin = new St.Bin({ y_align: Clutter.ActorAlign.CENTER });
                 iconBin.set_child(smallIcon);
                 infoBox.add_child(iconBin);
-            }
-        } catch(e) {}
+            } catch(e) {}
+        }
 
         let labelBox = new St.BoxLayout({
             vertical: true,
@@ -317,17 +313,15 @@ WindowCloserApplet.prototype = {
                 text: appName,
                 style: "font-size: 12px; font-weight: bold; color: rgba(255,255,255,0.9);"
             });
-            if (nameLabel.clutter_text) nameLabel.clutter_text.set_ellipsize(3);
+            if (nameLabel.clutter_text) nameLabel.clutter_text.set_ellipsize(Pango.EllipsizeMode.END);
             labelBox.add_child(nameLabel);
         }
 
-        let displayTitle = title;
-        if (displayTitle.length > 40) displayTitle = displayTitle.substring(0, 37) + "...";
         let titleLabel = new St.Label({
-            text: displayTitle,
+            text: title,
             style: "font-size: 10px; color: rgba(255,255,255,0.5);"
         });
-        if (titleLabel.clutter_text) titleLabel.clutter_text.set_ellipsize(3);
+        if (titleLabel.clutter_text) titleLabel.clutter_text.set_ellipsize(Pango.EllipsizeMode.END);
         labelBox.add_child(titleLabel);
 
         infoBox.add_child(labelBox);
@@ -336,27 +330,28 @@ WindowCloserApplet.prototype = {
         card.set_child(cardBox);
 
         // Click closes window
-        (function(w) {
-            card.connect("clicked", function() {
-                if (!self._readyForInput) return;
-                w.delete(global.get_current_time());
-                let parent = card.get_parent();
-                if (parent) {
-                    parent.remove_child(card);
-                    if (parent.get_n_children() === 0 && parent.get_parent()) {
-                        parent.get_parent().remove_child(parent);
-                    }
+        card.connect("clicked", function() {
+            if (!self._readyForInput) return;
+            win.delete(global.get_current_time());
+            let parent = card.get_parent();
+            if (parent) {
+                parent.remove_child(card);
+                card.destroy();
+                if (parent.get_n_children() === 0 && parent.get_parent()) {
+                    let container = parent.get_parent();
+                    container.remove_child(parent);
+                    parent.destroy();
                 }
-                if (self._cardContainer.get_n_children() === 0) {
-                    let doneLabel = new St.Label({
-                        text: "All windows closed!",
-                        style: "font-size: 16px; color: rgba(255,255,255,0.4); padding: 40px;"
-                    });
-                    doneLabel.set_x_align(Clutter.ActorAlign.CENTER);
-                    self._cardContainer.add_child(doneLabel);
-                }
-            });
-        })(win);
+            }
+            if (self._cardContainer.get_n_children() === 0) {
+                let doneLabel = new St.Label({
+                    text: "All windows closed!",
+                    style: "font-size: 16px; color: rgba(255,255,255,0.4); padding: 40px;"
+                });
+                doneLabel.set_x_align(Clutter.ActorAlign.CENTER);
+                self._cardContainer.add_child(doneLabel);
+            }
+        });
 
         return card;
     },

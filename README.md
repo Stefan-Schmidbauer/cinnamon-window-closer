@@ -1,7 +1,7 @@
 # Window Closer - Cinnamon Applet
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Cinnamon 6.x](https://img.shields.io/badge/Cinnamon-6.x-brightgreen.svg)](https://github.com/linuxmint/cinnamon)
+[![Cinnamon 5.4+](https://img.shields.io/badge/Cinnamon-5.4%2B-brightgreen.svg)](https://github.com/linuxmint/cinnamon)
 
 A Cinnamon desktop applet that lets you quickly close multiple windows from a visual overview.
 
@@ -18,10 +18,12 @@ A Cinnamon desktop applet that lets you quickly close multiple windows from a vi
 
 ## Installation
 
+### From source
+
 ```bash
 git clone https://github.com/Stefan-Schmidbauer/cinnamon-window-closer.git
 cd cinnamon-window-closer
-cp -r window-closer@local ~/.local/share/cinnamon/applets/
+cp -r window-closer@stefan-schmidbauer/files/window-closer@stefan-schmidbauer ~/.local/share/cinnamon/applets/
 ```
 
 Then reload Cinnamon (**Alt+F2** > type `r` > Enter) and activate the applet:
@@ -29,9 +31,17 @@ Then reload Cinnamon (**Alt+F2** > type `r` > Enter) and activate the applet:
 2. Select **Applets**
 3. Find **Window Closer** and enable it
 
+## Uninstallation
+
+```bash
+rm -rf ~/.local/share/cinnamon/applets/window-closer@stefan-schmidbauer
+```
+
+Then reload Cinnamon (**Alt+F2** > type `r` > Enter).
+
 ## Requirements
 
-- Linux Mint / Ubuntu with **Cinnamon 6.x** desktop environment
+- Linux Mint / Ubuntu with **Cinnamon 5.4+** desktop environment
 - No external dependencies
 
 ## License
