@@ -46,4 +46,4 @@ Then reload Cinnamon (**Alt+F2** > type `r` > Enter).
 
 ## License
 
-MIT License © 2026 Stefan Schmidbauer — see [LICENSE](LICENSE) for details. Built with [Claude Code](https://claude.ai/claude-code).
+MIT License © 2026 Stefan Schmidbauer — see [LICENSE](LICENSE) for details. Built with assistance from [Claude Code](https://claude.ai/claude-code).
