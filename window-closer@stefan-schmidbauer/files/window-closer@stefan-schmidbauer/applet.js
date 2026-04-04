@@ -6,6 +6,16 @@ const Clutter = imports.gi.Clutter;
 const Meta = imports.gi.Meta;
 const Mainloop = imports.mainloop;
 const Pango = imports.gi.Pango;
+const GLib = imports.gi.GLib;
+const Gettext = imports.gettext;
+
+const UUID = "window-closer@stefan-schmidbauer";
+
+Gettext.bindtextdomain(UUID, GLib.get_home_dir() + "/.local/share/locale");
+
+function _(str) {
+    return Gettext.dgettext(UUID, str);
+}
 
 const CARD_WIDTH = 220;
 const CARD_HEIGHT = 200;
@@ -24,11 +34,13 @@ WindowCloserApplet.prototype = {
 
         let iconPath = metadata.path + "/icon.svg";
         this.set_applet_icon_path(iconPath);
-        this.set_applet_tooltip("Window Closer");
+        this.set_applet_tooltip(_("Window Closer"));
 
         this._backdrop = null;
         this._dialog = null;
         this._readyForInput = false;
+        this._idleId = 0;
+        this._timeoutId = 0;
     },
 
     on_applet_clicked: function() {
@@ -107,7 +119,7 @@ WindowCloserApplet.prototype = {
 
         // Header
         let header = new St.Label({
-            text: "Window Closer",
+            text: _("Window Closer"),
             style: "font-size: 18px; font-weight: bold; color: rgba(255,255,255,0.9); " +
                    "padding-bottom: 6px;"
         });
@@ -115,7 +127,7 @@ WindowCloserApplet.prototype = {
         this._dialog.add_child(header);
 
         let subtitle = new St.Label({
-            text: "Click a window to close it \u00b7 Esc to exit",
+            text: _("Click a window to close it") + " \u00b7 " + _("Esc to exit"),
             style: "font-size: 12px; color: rgba(255,255,255,0.45); padding-bottom: 20px;"
         });
         subtitle.set_x_align(Clutter.ActorAlign.CENTER);
@@ -147,8 +159,9 @@ WindowCloserApplet.prototype = {
         });
 
         // Center after layout is computed
-        Mainloop.idle_add(function() {
-            if (!self._dialog) return false;
+        this._idleId = Mainloop.idle_add(function() {
+            self._idleId = 0;
+            if (!self._dialog) return GLib.SOURCE_REMOVE;
             let dW = self._dialog.get_width();
             let dH = self._dialog.get_height();
             let m = self._monitor;
@@ -161,12 +174,13 @@ WindowCloserApplet.prototype = {
                 m.x + Math.floor((m.width - dW) / 2),
                 m.y + Math.floor((m.height - dH) / 2)
             );
-            return false;
+            return GLib.SOURCE_REMOVE;
         });
 
-        Mainloop.timeout_add(300, function() {
+        this._timeoutId = Mainloop.timeout_add(300, function() {
+            self._timeoutId = 0;
             self._readyForInput = true;
-            return false;
+            return GLib.SOURCE_REMOVE;
         });
     },
 
@@ -178,7 +192,7 @@ WindowCloserApplet.prototype = {
 
         if (windows.length === 0) {
             let emptyLabel = new St.Label({
-                text: "No windows open",
+                text: _("No windows open"),
                 style: "font-size: 16px; color: rgba(255,255,255,0.4); padding: 40px;"
             });
             emptyLabel.set_x_align(Clutter.ActorAlign.CENTER);
@@ -346,7 +360,7 @@ WindowCloserApplet.prototype = {
             }
             if (self._cardContainer.get_n_children() === 0) {
                 let doneLabel = new St.Label({
-                    text: "All windows closed!",
+                    text: _("All windows closed!"),
                     style: "font-size: 16px; color: rgba(255,255,255,0.4); padding: 40px;"
                 });
                 doneLabel.set_x_align(Clutter.ActorAlign.CENTER);
@@ -358,6 +372,14 @@ WindowCloserApplet.prototype = {
     },
 
     _closeOverlay: function() {
+        if (this._idleId > 0) {
+            Mainloop.source_remove(this._idleId);
+            this._idleId = 0;
+        }
+        if (this._timeoutId > 0) {
+            Mainloop.source_remove(this._timeoutId);
+            this._timeoutId = 0;
+        }
         if (this._isModal) {
             Main.popModal(this._dialog);
             this._isModal = false;
