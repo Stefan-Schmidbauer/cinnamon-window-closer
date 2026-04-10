@@ -5,6 +5,6 @@
     "version": "1.0.1",
     "cinnamon-version": ["5.4", "5.6", "5.8", "6.0", "6.2"],
     "max-instances": 1,
-    "author": "Stefan Schmidbauer",
+    "author": "Stefan-Schmidbauer",
     "website": "https://github.com/Stefan-Schmidbauer/cinnamon-window-closer"
 }
