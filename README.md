@@ -18,6 +18,17 @@ A Cinnamon desktop applet that lets you quickly close multiple windows from a vi
 
 ## Installation
 
+### From Cinnamon Applet Manager (recommended)
+
+1. Right-click the Cinnamon panel
+2. Select **Applets**
+3. Switch to the **Download** tab
+4. Search for **Window Closer** and install it
+
+### From the Cinnamon Spices website
+
+Download directly from the [Cinnamon Spices website](https://cinnamon-spices.linuxmint.com/applets/view/444).
+
 ### From source
 
 ```bash
@@ -30,14 +41,6 @@ Then reload Cinnamon (**Alt+F2** > type `r` > Enter) and activate the applet:
 1. Right-click the Cinnamon panel
 2. Select **Applets**
 3. Find **Window Closer** and enable it
-
-## Uninstallation
-
-```bash
-rm -rf ~/.local/share/cinnamon/applets/window-closer@stefan-schmidbauer
-```
-
-Then reload Cinnamon (**Alt+F2** > type `r` > Enter).
 
 ## Requirements
 
